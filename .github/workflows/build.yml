@@ -1,1 +1,36 @@
+name: Build Project for Windows
 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-action@v1
+        with:
+          vs-version: 'latest'  
+
+      - name: Build Project
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Restore dependencies 
+        run: |
+          cd .
+          cmake .
+
+      - name: Build
+        run: |
+          cd .
+          msbuild YourProject.sln /p:Configuration=Release
